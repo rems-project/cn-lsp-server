@@ -1,0 +1,8 @@
+# Typescript
+| ".*\\.ts"      -> frame open:"/*" line:"*" close:"*/"
+| ".*\\.js"      -> frame open:"/*" line:"*" close:"*/"
+# OCaml
+| ".*\\.ml[i]?"  -> frame  open:"(*"    line:"="  close:"*)"
+# Misc
+| ".*Makefile.*" -> frame open:"#"  line:"#" close:"#"
+| "dune"         -> frame open:";"  line:";" close:";"

@@ -1,6 +1,25 @@
+##############################################################################
+#  ISC License                                                               #
+#                                                                            #
+#  Copyright (X) 2018-2019, the [ocaml-lsp                                   #
+#  contributors](https://github.com/ocaml/ocaml-lsp/graphs/contributors)     #
+#                                                                            #
+#  Permission to use, copy, modify, and distribute this software for any     #
+#  purpose with or without fee is hereby granted, provided that the above    #
+#  copyright notice and this permission notice appear in all copies.         #
+#                                                                            #
+#  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  #
+#  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          #
+#  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   #
+#  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    #
+#  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     #
+#  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   #
+#  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            #
+##############################################################################
+
 .DEFAULT_GOAL := all
 
-TEST_E2E_DIR = ocaml-lsp-server/test/e2e
+TEST_E2E_DIR = test/e2e
 
 $(TEST_E2E_DIR)/node_modules:
 	cd $(TEST_E2E_DIR) && yarn install
@@ -11,21 +30,6 @@ $(TEST_E2E_DIR)/node_modules:
 all:
 	dune build @all
 
-# we don't use --with-test because it pulls test dependencies transitively in
-# practice this ends up pulling a lot of extra packages which invariably
-# results in a conflict
-.PHONY: install-test-deps
-install-test-deps:
-	opam install menhir cinaps ppx_expect>=v0.14.0 \
-		ocamlformat.$$(cat .ocamlformat | grep version | cut -d '=' -f 2) ocamlformat-rpc
-
-.PHONY: dev
-dev: ## Setup a development environment
-	opam switch create --no-install . ocaml-base-compiler.4.12.0
-	opam install -y dune-release merlin ocamlformat utop ocaml-lsp-server
-	opam install --locked --deps-only --with-doc -y .
-	$(MAKE) install-test-deps
-
 .PHONY: install
 install: ## Install the packages on the system
 	dune build @install && dune install
@@ -33,10 +37,6 @@ install: ## Install the packages on the system
 .PHONY: lock
 lock: ## Generate the lock files
 	opam lock -y .
-
-.PHONY: test
-test-ocaml: ## Run the unit tests
-	dune build @lsp/test/runtest @lsp-fiber/runtest @fiber-unix/runtest @jsonrpc-fiber/runtest
 
 .PHONY: promote
 promote:
@@ -48,14 +48,14 @@ check:
 
 .PHONY: test-e2e
 test-e2e: $(TEST_E2E_DIR)/node_modules ## Run the template integration tests
-	dune build @install && cd $(TEST_E2E_DIR) && dune exec -- yarn test
+	dune build @install && cd $(TEST_E2E_DIR) && dune exec -- yarn test --testTimeout 15000
 
 .PHONY: promote-e2e
 promote-e2e: $(TEST_E2E_DIR)/node_modules
 	dune build @install && cd $(TEST_E2E_DIR) && dune exec -- yarn run promote
 
 .PHONY: test
-test: test-ocaml test-e2e
+test: test-e2e
 
 .PHONY: clean
 clean: ## Clean build artifacts and other generated files
@@ -85,3 +85,27 @@ release: ## Release on Opam
 .PHONY: nix/opam-selection.nix
 nix/opam-selection.nix:
 	nix-shell -A resolve default.nix
+
+.PHONY: clear-header
+
+clear-header:
+	headache -c etc/headache_config -r \
+	    `find src -name '*.ml'` \
+	    `find src -name '*.ml*'` \
+	    Makefile \
+	    dune \
+	    `find test -name '*.js' ! -path 'test/e2e/node_modules/*'` \
+	    `find test -name '*.ts' ! -path 'test/e2e/node_modules/*'`
+
+.PHONY: apply-header
+
+apply-header:
+	headache -c etc/headache_config -h etc/ISC \
+	    `find src -name '*.ml' ! -path 'src/cn.ml'` \
+	    `find src -name '*.ml*'` \
+	    Makefile \
+	    dune \
+	    `find test -name '*.js' ! -path 'test/e2e/node_modules/*'` \
+	    `find test -name '*.ts' ! -path 'test/e2e/node_modules/*'`
+	headache -c etc/headache_config -h etc/BSD-2-Clause src/cn.ml
+

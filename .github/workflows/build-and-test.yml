@@ -15,9 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
           - ubuntu-latest
-          - windows-latest
         ocaml-compiler:
           - 4.12.x
 
@@ -32,16 +30,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          submodules: true
+          submodules: recursive
+          path: cn-lsp-server
 
       - name: Use latest LTS Node.js release
         uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: 17.0
 
       - name: Install npm packages
         run: yarn --frozen-lockfile
-        working-directory: ocaml-lsp-server/test/e2e
+        working-directory: cn-lsp-server/test/e2e
 
       - name: Use OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v2
@@ -51,20 +50,35 @@ jobs:
 
       - name: Install opam packages
         run: opam install .
-
-      # the makefile explains why we don't use test dependencies
-      - name: Install test dependencies
-        run: make install-test-deps
+        working-directory: cn-lsp-server
 
       - name: Check formatting
-        run: opam exec -- make fmt
+        run: opam install ocamlformat && opam exec -- make fmt
+        working-directory: cn-lsp-server
         if: ${{ matrix.os == 'ubuntu-latest' && always() }}
 
       - name: Run build
         run: opam exec -- make all
+        working-directory: cn-lsp-server
 
-      - name: Run the unit tests
-        run: opam exec -- make test-ocaml
+      - name: Checkout Cerberus
+        uses: actions/checkout@v2
+        with:
+          repository: rems-project/cerberus
+          path: cerberus
+          ref: cerna
 
-      - name: Run the template integration tests
-        run: opam exec -- make test-e2e
+      - name: Install Cerberus system dependency
+        run: sudo apt-get install libmpfr-dev -y
+
+      - name: Install Cerberus OCaml dependencies
+        run: opam install --deps-only .
+        working-directory: cerberus
+
+      - name: Install Cerberus and CN
+        run: opam exec -- make install install_cn
+        working-directory: cerberus
+
+      - name: Run the integration tests
+        run: opam exec -- make test
+        working-directory: cn-lsp-server

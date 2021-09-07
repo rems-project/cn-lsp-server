@@ -1,5 +1,5 @@
 {
-  "name": "ocaml-lsp",
+  "name": "cn-lsp",
   "private": true,
   "scripts": {
     "fmt-check": "prettier --check .",

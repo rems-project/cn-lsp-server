@@ -3,6 +3,7 @@ import * as LanguageServer from "./../src/LanguageServer";
 
 import * as Types from "vscode-languageserver-types";
 
+/* start commenting out incremental
 describe("TextDocument: incremental sync", () => {
   let languageServer: LanguageServer.LanguageServer;
 
@@ -244,7 +245,10 @@ describe("TextDocument: incremental sync", () => {
 
     expect(await getDoc(languageServer)).toEqual("\nlet y = 2;");
   });
+
 });
+
+end commented out incremental */
 
 describe("TextDocument", () => {
   let languageServer;
@@ -277,6 +281,8 @@ describe("TextDocument", () => {
     });
   });
 
+  /* start commenting out tests
+
   describe("didChange", () => {
     it("updates text document", async () => {
       languageServer = await LanguageServer.startAndInitialize();
@@ -307,4 +313,7 @@ describe("TextDocument", () => {
       expect(result).toEqual("Hello again!");
     });
   });
+
+  end commenting out tests */
+  
 });

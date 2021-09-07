@@ -38,7 +38,7 @@ val timer : t -> Scheduler.timer
 
 val uri : t -> Uri.t
 
-val source : t -> Msource.t
+val source : t -> string
 
 val with_pipeline :
   t -> (Mpipeline.t -> 'a) -> ('a, Exn_with_backtrace.t) result Fiber.t

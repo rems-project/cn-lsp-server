@@ -91,7 +91,7 @@ let set_diagnostics rpc doc =
   let uri = Document.uri doc in
   let create_diagnostic ?code ?relatedInformation ?severity range message =
     Diagnostic.create ?code ?relatedInformation ?severity ~range ~message
-      ~source:"ocamllsp" ()
+      ~source:"cnlsp" ()
   in
   let async send =
     let open Fiber.O in
@@ -122,7 +122,10 @@ let set_diagnostics rpc doc =
     async (fun () -> Diagnostics.send state.diagnostics)
   | Reason
   | Ocaml ->
-    failwith "Cn_ls_server.set_diagnostics:Ocaml"
+    async (fun () ->
+        let diagnostics = (* TODO: add error location info here *) [] in
+        Diagnostics.set state.diagnostics (`Merlin (uri, diagnostics));
+        Diagnostics.send state.diagnostics)
 
 let on_initialize rpc (ip : InitializeParams.t) =
   let state : State.t = Server.state rpc in
@@ -391,7 +394,7 @@ let ocaml_on_request :
   | DebugTextDocumentGet { textDocument = { uri }; position = _ } -> (
     match Document_store.get_opt store uri with
     | None -> now None
-    | Some _doc -> now (Some (failwith "Cn_lsp_server.ocaml_on_request:DebugTextDocumentGet")))
+    | Some doc -> now (Some (Document.source doc)))
   | DebugEcho params -> now params
   | TextDocumentColor _ -> now []
   | TextDocumentColorPresentation _ -> now []

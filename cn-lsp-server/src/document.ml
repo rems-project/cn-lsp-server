@@ -85,7 +85,6 @@ end
 
 type t =
   { tdoc : Text_document.t
-  ; pipeline : Mpipeline.t
   ; merlin : Scheduler.thread
   ; timer : Scheduler.timer
   }
@@ -98,7 +97,7 @@ let syntax t = Syntax.of_language_id (Text_document.languageId t.tdoc)
 
 let timer t = t.timer
 
-let source _doc = failwith "Document.source"
+let source doc = Text_document.text doc.tdoc
 
 let with_pipeline (_doc : t) _f =
   failwith "Documnet.with_pipeline"
@@ -112,24 +111,17 @@ let with_pipeline_exn doc f =
 
 let version doc = Text_document.version doc.tdoc
 
-let make_pipeline _thread _tdoc =
-  failwith "Document.make_pipeline"
-
 let make timer merlin_thread tdoc =
   let tdoc = Text_document.make tdoc in
   (* we can do that b/c all text positions in LSP are line/col *)
-  let open Fiber.O in
-  let+ pipeline = make_pipeline merlin_thread tdoc in
-  { tdoc; pipeline; merlin = merlin_thread; timer }
+  Fiber.return { tdoc; merlin = merlin_thread; timer }
 
 let update_text ?version doc changes =
   let tdoc =
     List.fold_left changes ~init:doc.tdoc ~f:(fun acc change ->
         Text_document.apply_content_change ?version acc change)
   in
-  let open Fiber.O in
-  let+ pipeline = make_pipeline doc.merlin tdoc in
-  { doc with tdoc; pipeline }
+  Fiber.return { doc with tdoc }
 
 let dispatch (doc : t) _command =
   with_pipeline doc (failwith "Document.dispatch")

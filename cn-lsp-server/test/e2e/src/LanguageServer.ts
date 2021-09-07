@@ -46,7 +46,7 @@ export const start = (opts?: cp.SpawnOptions) => {
   );
 
   childProcess.stderr.on("data", (d) => {
-    if (process.env.OCAMLLSP_TEST_DEBUG) {
+    if (process.env.CNLSP_TEST_DEBUG) {
       console.log("Received data: " + d);
     }
   });

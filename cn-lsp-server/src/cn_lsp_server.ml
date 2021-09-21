@@ -123,7 +123,7 @@ let set_diagnostics rpc doc =
   | Reason
   | Ocaml ->
     async (fun () ->
-        let diagnostics = (* TODO: add error location info here *) [] in
+        let diagnostics = Cn.get_errs doc in
         Diagnostics.set state.diagnostics (`Merlin (uri, diagnostics));
         Diagnostics.send state.diagnostics)
 

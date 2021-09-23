@@ -6,6 +6,7 @@ import * as rpc from "vscode-jsonrpc/node";
 import * as Protocol from "vscode-languageserver-protocol";
 import { URI } from "vscode-uri";
 
+/* TODO update to CN version */
 const ocamlVersion = cp.execSync("ocamlc --version").toString();
 export function ocamlVersionGEq(versString: string) {
   return ocamlVersion >= versString;

@@ -20,9 +20,10 @@ let env =
 let get_errs (doc : Document.t) : Diagnostic.t list =
   let doc_path = Uri.to_path @@ Document.uri doc in
   let cn = Fpath.to_string @@ Option.value_exn @@ Bin.which "cn" in
-  let _stdin, _stdout, stderr =
+  let (_stdin, _stdout, stderr) as pipes =
     Unix.open_process_args_full cn [| cn ; doc_path |] (Lazy.force env) in
   let message = input_all stderr in
+  ignore (Unix.close_process_full pipes);
   let pos = Position.create ~line:0 ~character:0 in
   let range = Range.create ~start:pos ~end_:pos in
   [ Diagnostic.create ~message ~range () ]

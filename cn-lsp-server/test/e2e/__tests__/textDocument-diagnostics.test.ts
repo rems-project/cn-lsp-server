@@ -2,18 +2,20 @@ import outdent from "outdent";
 import * as rpc from "vscode-jsonrpc/node";
 import * as LanguageServer from "../src/LanguageServer";
 import { writeFileSync, unlinkSync } from "fs";
+import * as path from "path";
+import * as os from "os";
 
 import * as Types from "vscode-languageserver-types";
 
 describe("textDocument/diagnostics", () => {
   let languageServer: rpc.MessageConnection = null;
-  let path = "/tmp/cn-lsp-server-diagnostic-test.c";
+  let tmpFile = path.join(os.tmpdir(), "cn-lsp-server-diagnostic-test.c");
 
   async function openDocument(source: string) {
-    writeFileSync(path, source);
+    writeFileSync(tmpFile, source);
     await languageServer.sendNotification("textDocument/didOpen", {
       textDocument: Types.TextDocumentItem.create(
-        "file://" + path,
+        "file://" + tmpFile,
         "ocaml",
         0,
         source,
@@ -26,7 +28,7 @@ describe("textDocument/diagnostics", () => {
   });
 
   afterEach(async () => {
-    unlinkSync(path);
+    unlinkSync(tmpFile);
     await LanguageServer.exit(languageServer);
     languageServer = null;
   });
@@ -41,20 +43,16 @@ describe("textDocument/diagnostics", () => {
           Object {
             "diagnostics": Array [
               Object {
-                "message": "[1;31merror:[0m [1m[1m/tmp/cn-lsp-server-diagnostic-test.c:8:14:[0m[0m Undefined behaviour
-            inner->x = inner->x + 2 - 1;
-          [1;32m             ~~~~~~~~~^~~ [0m
-          (§6.5#2) an exceptional condition occurred during the evaluation of an expression.
-          Consider state in state.html
-          ",
+                "message": "Undefined behaviour
+          (§6.5#2) an exceptional condition occurred during the evaluation of an expression.",
                 "range": Object {
                   "end": Object {
-                    "character": 0,
-                    "line": 0,
+                    "character": 25,
+                    "line": 8,
                   },
                   "start": Object {
-                    "character": 0,
-                    "line": 0,
+                    "character": 13,
+                    "line": 8,
                   },
                 },
               },
@@ -88,5 +86,4 @@ void f (struct s1* outer) {
     `);
     await receivedDiganostics;
   });
-
 });

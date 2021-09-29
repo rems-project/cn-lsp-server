@@ -77,8 +77,6 @@ let initialize_info : InitializeResult.t =
   in
   InitializeResult.create ~capabilities ~serverInfo ()
 
-let ocamlmerlin_reason = "ocamlmerlin-reason"
-
 let task_if_running (state : State.t) ~f =
   let open Fiber.O in
   let* running = Fiber.Pool.running state.detached in
@@ -89,10 +87,6 @@ let task_if_running (state : State.t) ~f =
 let set_diagnostics rpc doc =
   let state : State.t = Server.state rpc in
   let uri = Document.uri doc in
-  let create_diagnostic ?code ?relatedInformation ?severity range message =
-    Diagnostic.create ?code ?relatedInformation ?severity ~range ~message
-      ~source:"cnlsp" ()
-  in
   let async send =
     let open Fiber.O in
     let+ () =
@@ -107,25 +101,10 @@ let set_diagnostics rpc doc =
     in
     ()
   in
-  match Document.syntax doc with
-  | Menhir
-  | Ocamllex ->
-    Fiber.return ()
-  | Reason when Option.is_none (Bin.which ocamlmerlin_reason) ->
-    let no_reason_merlin =
-      let message =
-        sprintf "Could not detect %s. Please install reason" ocamlmerlin_reason
-      in
-      create_diagnostic Range.first_line message
-    in
-    Diagnostics.set state.diagnostics (`Merlin (uri, [ no_reason_merlin ]));
-    async (fun () -> Diagnostics.send state.diagnostics)
-  | Reason
-  | Ocaml ->
-    async (fun () ->
-        let diagnostics = Cn.get_errs doc in
-        Diagnostics.set state.diagnostics (`Merlin (uri, diagnostics));
-        Diagnostics.send state.diagnostics)
+  async (fun () ->
+    let diagnostics = Cn.get_errs doc in
+    Diagnostics.set state.diagnostics (`Merlin (uri, diagnostics));
+    Diagnostics.send state.diagnostics)
 
 let on_initialize rpc (ip : InitializeParams.t) =
   let state : State.t = Server.state rpc in
@@ -178,7 +157,6 @@ module Formatter = struct
     let message = Fmt.message e in
     let code : Jsonrpc.Response.Error.Code.t =
       match e with
-      | Unsupported_syntax _
       | Unknown_extension _
       | Missing_binary _ ->
         InvalidRequest
@@ -215,10 +193,8 @@ let markdown_support (client_capabilities : ClientCapabilities.t) ~field =
       let set = Option.value format ~default:[ MarkupKind.Markdown ] in
       List.mem set MarkupKind.Markdown ~equal:Poly.equal)
 
-let format_contents ~syntax ~markdown ~typ ~doc =
-  (* TODO for vscode, we should just use the language id. But that will not work
-     for all editors *)
-  let markdown_name = Document.Syntax.markdown_name syntax in
+let format_contents ~markdown ~typ ~doc =
+  let markdown_name = "c" in
   `MarkupContent
     (if markdown then
       let value =
@@ -259,14 +235,13 @@ let hover _server (state : State.t)
   match query_type with
   | None -> Fiber.return None
   | Some (loc, typ) ->
-    let syntax = Document.syntax doc in
     let+ doc = query_doc doc pos in
     let contents =
       let markdown =
         markdown_support client_capabilities ~field:(fun td ->
             Option.map td.hover ~f:(fun h -> h.contentFormat))
       in
-      format_contents ~syntax ~markdown ~typ ~doc
+      format_contents ~markdown ~typ ~doc
     in
     let range = Range.of_loc loc in
     let resp = Hover.create ~contents ~range () in
@@ -278,11 +253,8 @@ let signature_help (_state : State.t) =
 let text_document_lens (state : State.t)
     { CodeLensParams.textDocument = { uri }; _ } =
   let store = state.store in
-  let doc = Document_store.get store uri in
-  match Document.kind doc with
-  | Intf -> Fiber.return []
-  | Impl ->
-    failwith "Cn_lsp_server.text_document_lens:Impl"
+  let _doc = Document_store.get store uri in
+  failwith "Cn_lsp_server.text_document_lens"
 
 let folding_range (_state : State.t)
     { FoldingRangeParams.textDocument = { uri = _ }; _ } =
@@ -451,16 +423,6 @@ let on_request :
     -> (resp Reply.t * State.t) Fiber.t =
  fun server req ->
   let state : State.t = Server.state server in
-  let store = state.store in
-  let syntax : Document.Syntax.t option =
-    let open Option.O in
-    let* td =
-      Client_request.text_document req (fun ~meth:_ ~params:_ -> None)
-    in
-    let uri = td.uri in
-    let+ doc = Document_store.get_opt store uri in
-    Document.syntax doc
-  in
   match req with
   | Client_request.UnknownRequest { meth; params } -> (
     match
@@ -483,10 +445,7 @@ let on_request :
               let* res = handler ~params state in
               send res)
         , state ))
-  | _ -> (
-    match syntax with
-    | Some (Ocamllex | Menhir) -> not_supported ()
-    | _ -> ocaml_on_request server req)
+  | _ -> (ocaml_on_request server req)
 
 let on_notification server (notification : Client_notification.t) :
     State.t Fiber.t =

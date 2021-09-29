@@ -13,15 +13,11 @@ let create () =
   { stdout; stderr; stdin }
 
 type error =
-  | Unsupported_syntax of Document.Syntax.t
   | Missing_binary of { binary : string }
   | Unexpected_result of { message : string }
   | Unknown_extension of Uri.t
 
 let message = function
-  | Unsupported_syntax syntax ->
-    sprintf "formatting %s files is not supported"
-      (Document.Syntax.human_name syntax)
   | Missing_binary { binary } ->
     sprintf
       "Unable to find %s binary. You need to install %s manually to use the \

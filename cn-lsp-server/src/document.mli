@@ -2,32 +2,6 @@ open Import
 
 type t
 
-module Syntax : sig
-  type t =
-    | Ocaml
-    | Reason
-    | Ocamllex
-    | Menhir
-
-  val human_name : t -> string
-
-  val markdown_name : t -> string
-
-  val of_fname : string -> t
-end
-
-module Kind : sig
-  type t =
-    | Intf
-    | Impl
-
-  val of_fname : string -> t
-end
-
-val kind : t -> Kind.t
-
-val syntax : t -> Syntax.t
-
 val make :
      Scheduler.timer
   -> Scheduler.thread

@@ -21,8 +21,5 @@ let code_action_of_intf doc intf range =
 
 let code_action doc (state : State.t) (params : CodeActionParams.t) =
   let open Fiber.O in
-  match Document.kind doc with
-  | Impl -> Fiber.return None
-  | Intf ->
-    let+ intf = Inference.infer_intf ~force_open_impl:true state doc in
-    Some (code_action_of_intf doc intf params.range)
+  let+ intf = Inference.infer_intf ~force_open_impl:true state doc in
+  Some (code_action_of_intf doc intf params.range)

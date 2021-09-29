@@ -14,9 +14,9 @@ let input_all t =
 let env =
   lazy (
   let f s = s ^ "=" ^ Unix.getenv s in
+  (* need path for CC for preprocessor *)
   [| f "OPAM_SWITCH_PREFIX" ; "PATH=/usr/bin" |] )
 
-(* Can use Yojson to get Json from in_channel *)
 let get_errs (doc : Document.t) : Diagnostic.t list =
   let doc_path = Uri.to_path @@ Document.uri doc in
   let cn = Fpath.to_string @@ Option.value_exn @@ Bin.which "cn" in
@@ -41,6 +41,7 @@ let get_errs (doc : Document.t) : Diagnostic.t list =
                |> Util.member "loc"
                |> Util.to_list
                |> (fun x ->
+                   assert (List.length x = 2);
                    assert (String.equal (Util.to_string @@ List.hd x)  "Region");
                    List.tl x)
                |> List.hd in

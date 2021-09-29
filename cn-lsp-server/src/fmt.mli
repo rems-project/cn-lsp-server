@@ -9,7 +9,6 @@ type t
 val create : unit -> t
 
 type error =
-  | Unsupported_syntax of Document.Syntax.t
   | Missing_binary of { binary : string }
   | Unexpected_result of { message : string }
   | Unknown_extension of Uri.t

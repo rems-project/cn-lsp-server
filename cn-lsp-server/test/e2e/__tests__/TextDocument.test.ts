@@ -26,7 +26,7 @@ describe("TextDocument: incremental sync", () => {
     languageServer.sendNotification("textDocument/didOpen", {
       textDocument: Types.TextDocumentItem.create(
         "file:///test-document.txt",
-        "ocaml",
+        "c",
         0,
         outdent`
           let x = 4
@@ -58,7 +58,7 @@ describe("TextDocument: incremental sync", () => {
     languageServer.sendNotification("textDocument/didOpen", {
       textDocument: Types.TextDocumentItem.create(
         "file:///test-document.txt",
-        "ocaml",
+        "c",
         0,
         "let x = 1;\n\nlet y = 2;",
       ),
@@ -111,7 +111,7 @@ describe("TextDocument: incremental sync", () => {
     languageServer.sendNotification("textDocument/didOpen", {
       textDocument: Types.TextDocumentItem.create(
         "file:///test-document.txt",
-        "ocaml",
+        "c",
         0,
         "let x = 1;\n\nlet y = 2;",
       ),
@@ -145,7 +145,7 @@ describe("TextDocument: incremental sync", () => {
     languageServer.sendNotification("textDocument/didOpen", {
       textDocument: Types.TextDocumentItem.create(
         "file:///test-document.txt",
-        "ocaml",
+        "c",
         0,
         "let x = 1;\n\nlet y = 2;",
       ),
@@ -181,7 +181,7 @@ describe("TextDocument: incremental sync", () => {
     languageServer.sendNotification("textDocument/didOpen", {
       textDocument: Types.TextDocumentItem.create(
         "file:///test-document.txt",
-        "ocaml",
+        "c",
         0,
         "let x = 1;\n\nlet y = 2;",
       ),
@@ -217,7 +217,7 @@ describe("TextDocument: incremental sync", () => {
     languageServer.sendNotification("textDocument/didOpen", {
       textDocument: Types.TextDocumentItem.create(
         "file:///test-document.txt",
-        "ocaml",
+        "c",
         0,
         "let x = 1;\n\nlet y = 2;",
       ),
@@ -261,7 +261,7 @@ describe("TextDocument", () => {
       languageServer.sendNotification("textDocument/didOpen", {
         textDocument: Types.TextDocumentItem.create(
           "file:///test-document.txt",
-          "ocaml",
+          "c",
           0,
           "Hello, World!",
         ),
@@ -284,7 +284,7 @@ describe("TextDocument", () => {
       languageServer.sendNotification("textDocument/didOpen", {
         textDocument: Types.TextDocumentItem.create(
           "file:///test-document.txt",
-          "ocaml",
+          "c",
           0,
           "Hello, World!",
         ),

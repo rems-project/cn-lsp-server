@@ -15,8 +15,8 @@ describe("textDocument/diagnostics", () => {
     writeFileSync(tmpFile, source);
     await languageServer.sendNotification("textDocument/didOpen", {
       textDocument: Types.TextDocumentItem.create(
-        "file://" + tmpFile,
-        "ocaml",
+        LanguageServer.toURI(tmpFile),
+        "c",
         0,
         source,
       ),

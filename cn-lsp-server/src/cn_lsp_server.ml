@@ -14,6 +14,7 @@ let not_supported () =
     (make_error ~code:InternalError ~message:"Request not supported yet!" ())
 
 let initialize_info : InitializeResult.t =
+  (*
   let codeActionProvider =
     let codeActionKinds =
       [ CodeActionKind.Other Action_destruct.action_kind
@@ -26,12 +27,6 @@ let initialize_info : InitializeResult.t =
       ]
     in
     `CodeActionOptions (CodeActionOptions.create ~codeActionKinds ())
-  in
-  let textDocumentSync =
-    `TextDocumentSyncOptions
-      (TextDocumentSyncOptions.create ~openClose:true
-         ~change:TextDocumentSyncKind.Incremental ~willSave:false
-         ~save:(`Bool true) ~willSaveWaitUntil:false ())
   in
   let codeLensProvider = CodeLensOptions.create ~resolveProvider:false () in
   let completionProvider =
@@ -48,7 +43,15 @@ let initialize_info : InitializeResult.t =
   let renameProvider =
     `RenameOptions (RenameOptions.create ~prepareProvider:true ())
   in
+*)
+  let textDocumentSync =
+    `TextDocumentSyncOptions
+      (TextDocumentSyncOptions.create ~openClose:true
+         ~change:TextDocumentSyncKind.Incremental ~willSave:false
+         ~save:(`Bool true) ~willSaveWaitUntil:false ())
+  in
   let capabilities =
+    (*
     let experimental =
       `Assoc
         [ ( "ocamllsp"
@@ -61,7 +64,8 @@ let initialize_info : InitializeResult.t =
               ] )
         ]
     in
-    ServerCapabilities.create ~textDocumentSync ~hoverProvider:(`Bool true)
+   *)
+    ServerCapabilities.create ~textDocumentSync (* ~hoverProvider:(`Bool true)
       ~declarationProvider:(`Bool true) ~definitionProvider:(`Bool true)
       ~typeDefinitionProvider:(`Bool true) ~completionProvider
       ~signatureHelpProvider ~codeActionProvider ~codeLensProvider
@@ -69,11 +73,11 @@ let initialize_info : InitializeResult.t =
       ~documentFormattingProvider:(`Bool true)
       ~selectionRangeProvider:(`Bool true) ~documentSymbolProvider:(`Bool true)
       ~workspaceSymbolProvider:(`Bool true) ~foldingRangeProvider:(`Bool true)
-      ~experimental ~renameProvider ()
+      ~experimental ~renameProvider *) ()
   in
   let serverInfo =
     let version = Version.get () in
-    InitializeResult.create_serverInfo ~name:"ocamllsp" ~version ()
+    InitializeResult.create_serverInfo ~name:"cnlsp" ~version ()
   in
   InitializeResult.create ~capabilities ~serverInfo ()
 
@@ -453,6 +457,7 @@ let on_notification server (notification : Client_notification.t) :
   let store = state.store in
   match notification with
   | TextDocumentDidOpen params ->
+    Log.log ~section:"debug" (fun () -> Log.msg "doc opened" []);
     let open Fiber.O in
     let* doc =
       let delay = Configuration.diagnostics_delay state.configuration in
@@ -463,6 +468,7 @@ let on_notification server (notification : Client_notification.t) :
     let+ () = set_diagnostics server doc in
     state
   | TextDocumentDidClose { textDocument = { uri } } ->
+    Log.log ~section:"debug" (fun () -> Log.msg "doc closed" []);
     let open Fiber.O in
     let+ () =
       Diagnostics.remove state.diagnostics (`Merlin uri);
@@ -471,6 +477,7 @@ let on_notification server (notification : Client_notification.t) :
     in
     state
   | TextDocumentDidChange { textDocument = { uri; version }; contentChanges } ->
+    Log.log ~section:"debug" (fun () -> Log.msg "doc changed" []);
     let prev_doc = Document_store.get store uri in
     let open Fiber.O in
     let* doc = Document.update_text ~version prev_doc contentChanges in

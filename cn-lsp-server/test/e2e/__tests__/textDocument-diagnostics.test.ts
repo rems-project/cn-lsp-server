@@ -43,16 +43,19 @@ describe("textDocument/diagnostics", () => {
           Object {
             "diagnostics": Array [
               Object {
+                "codeDescription": Object {
+                  "href": "https://code.visualstudio.com/",
+                },
                 "message": "Undefined behaviour
           (§6.5#2) an exceptional condition occurred during the evaluation of an expression.",
                 "range": Object {
                   "end": Object {
                     "character": 25,
-                    "line": 8,
+                    "line": 7,
                   },
                   "start": Object {
                     "character": 13,
-                    "line": 8,
+                    "line": 7,
                   },
                 },
               },

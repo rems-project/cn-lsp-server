@@ -27,7 +27,7 @@ module Json = struct
 end
 
 module Log = struct
-  let level : (string option -> bool) ref = ref (fun _ -> false)
+  let level : (string option -> bool) ref = ref (fun _ -> true)
 
   let out = ref Format.err_formatter
 

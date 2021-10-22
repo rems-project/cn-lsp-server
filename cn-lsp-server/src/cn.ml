@@ -13,42 +13,53 @@ let input_all t =
 
 let env =
   lazy (
-    (* let f s = s ^ "=" ^ Unix.getenv s in *)
-    (* FIXME don't hard code *)
+    let f s = s ^ "=" ^ Unix.getenv s in
     (* need path for CC for preprocessor *)
-    [| "OPAM_SWITCH_PREFIX=/auto/homes/dcm41/.opam/4.09.1" ; "PATH=/usr/bin" |] )
+    [| f "OPAM_SWITCH_PREFIX" ; "PATH=/usr/bin" |] )
+
+module Util = Yojson.Safe.Util
+
+let ( .%{} ) json str = Util.member str json
+
+let get_range_exn json =
+  (*  [ "Region", {
+        "region_start": { "file": "structs9.c", "line": 8, "char": 13 },
+        "region_end": { "file": "structs9.c", "line": 8, "char": 25 },
+        "region_cursor": { "file": "structs9.c", "line": 8, "char": 22 } } ] *)
+  let region = match Util.to_list json.%{"loc"} with
+    | [] | [_] | _ :: _ :: _ :: _ -> assert false
+    | [ tag ; result ] ->
+      assert (String.equal (Util.to_string tag)  "Region");
+      result in
+  let pos x = Position.create
+      ~line:(Util.to_int (x.%{"line"}) - 1 (* LSP starts at line 0 *))
+      ~character:(Util.to_int @@ x.%{"char"}) in
+  Range.create ~start:(pos region.%{"region_start"}) ~end_:(pos region.%{"region_end"})
+
+let get_message_exn json =
+  let short = Util.to_string (json.%{"short"}) in
+  match Util.to_string_option json.%{"descr" } with
+  | Some descr -> short ^ " " ^ descr
+  | None -> short
+
+let get_code_and_descr_exn json =
+    match Util.(to_string_option json.%{"state"}) with
+    | None -> None, None
+    | Some state_file ->
+    let href = "file://" ^ state_file in
+    Some (`String "View Program State"), Some (Lsp.Types.CodeDescription.create ~href)
 
 let json_to_diagnostic json = 
-  let module Util = Yojson.Safe.Util in
   try
-    (* { "loc":
-         [ "Region", {
-           "region_start": { "file": "structs9.c", "line": 8, "char": 13 },
-           "region_end": { "file": "structs9.c", "line": 8, "char": 25 },
-           "region_cursor": { "file": "structs9.c", "line": 8, "char": 22 } } ],
-       "short": "Undefined behaviour",
-       "descr": "(§6.5#2) an exceptional condition occurred during the evaluation of an expression." } *)
-    let region = json
-                 |> Util.member "loc"
-                 |> Util.to_list
-                 |> (fun x ->
-                     assert (List.length x = 2);
-                     assert (String.equal (Util.to_string @@ List.hd x)  "Region");
-                     List.tl x)
-                 |> List.hd in
-    let start , end_ = Util.member "region_start" region , Util.member "region_end" region in
-    let pos x = Position.create
-        ~line:(Util.to_int (Util.member "line" x) - 1 (* LSP starts at line 0 *))
-        ~character:(Util.to_int @@ Util.member "char" x) in
-    let start , end_ = pos start , pos end_ in
-    let range = Range.create ~start ~end_ in
-    let href = "file:///auto/homes/dcm41/c-tests/annotated/state.html" in
-    let message = Util.((to_string (member "short" json) 
-                         ^ " " ^ to_string (member "descr" json))) in
+(* { "loc": [ "Region", { .. } ]
+   , "short": "Undefined behaviour"
+   , "descr": "<long description>"
+   , "state":"/tmp/944928.cn-state" } *)
+    let range = get_range_exn json
+    and message = get_message_exn json
     (* [code] must be present for [codeDescription] to work *)
-    let code = `String "View Program State" in
-    let codeDescription = Lsp.Types.CodeDescription.create ~href in
-    [ Diagnostic.create ~code ~codeDescription ~message ~range () ]
+    and code, codeDescription = get_code_and_descr_exn json in
+    [ Diagnostic.create ?code ?codeDescription ~message ~range () ]
   with
   | Util.Type_error (_str , _)
   | Util.Undefined (_str , _) ->
@@ -57,8 +68,7 @@ let json_to_diagnostic json =
 
 let get_errs (doc : Document.t) : Diagnostic.t list =
   let doc_path = Uri.to_path @@ Document.uri doc in
-  (* let cn = Fpath.to_string @@ Option.value_exn @@ Bin.which "cn" in *)
-  let cn = "/auto/homes/dcm41/.opam/4.09.1/bin/cn" in
+  let cn = Fpath.to_string @@ Option.value_exn @@ Bin.which "cn" in
   let (_stdin, _stdout, stderr) as pipes =
     Unix.open_process_args_full cn [| cn ; "--json" ; doc_path |] (Lazy.force env) in
     (* FIXME handle errors from this? *)

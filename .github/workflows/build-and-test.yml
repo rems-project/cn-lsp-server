@@ -41,7 +41,7 @@ jobs:
 
       - name: Install npm packages
         run: yarn --frozen-lockfile
-        working-directory: ocaml-lsp-server/test/e2e
+        working-directory: test/e2e
 
       - name: Use OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v2

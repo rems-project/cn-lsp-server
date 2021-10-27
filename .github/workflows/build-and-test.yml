@@ -47,7 +47,7 @@ jobs:
 
       - name: Install npm packages
         run: yarn --frozen-lockfile
-        working-directory: ./test/e2e
+        working-directory: cn-lsp-server/test/e2e
 
       - name: Use OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v2
@@ -56,17 +56,22 @@ jobs:
           dune-cache: ${{ matrix.os != 'macos-latest' }}
 
       - name: Install Cerberus and CN
-        run: cd cerberus && opam install --deps-only . && make install install_cn
+        run: opam install --deps-only . && make install install_cn
+        working-directory: cerberus
 
       - name: Install opam packages
-        run: cd cn-lsp-server && opam install .
+        run: opam install .
+        working-directory: cn-lsp-server
 
       - name: Check formatting
-        run: cd cn-lsp-server && opam install ocamlformat && opam exec -- make fmt
+        run: opam install ocamlformat && opam exec -- make fmt
+        working-directory: cn-lsp-server
         if: ${{ matrix.os == 'ubuntu-latest' && always() }}
 
       - name: Run build
-        run: cd cn-lsp-server && opam exec -- make all
+        run: opam exec -- make all
+        working-directory: cn-lsp-server
 
       - name: Run the integration tests
-        run: cd cn-lsp-server && opam exec -- make test
+        run: opam exec -- make test
+        working-directory: cn-lsp-server

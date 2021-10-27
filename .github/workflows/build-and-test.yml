@@ -51,7 +51,7 @@ jobs:
         run: opam install .
 
       - name: Check formatting
-        run: opam exec -- make fmt
+        run: opam install ocamlformat && opam exec -- make fmt
         if: ${{ matrix.os == 'ubuntu-latest' && always() }}
 
       - name: Run build

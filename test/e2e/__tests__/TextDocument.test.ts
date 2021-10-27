@@ -244,7 +244,6 @@ describe("TextDocument: incremental sync", () => {
 
     expect(await getDoc(languageServer)).toEqual("\nlet y = 2;");
   });
-
 });
 
 describe("TextDocument", () => {
@@ -308,5 +307,4 @@ describe("TextDocument", () => {
       expect(result).toEqual("Hello again!");
     });
   });
-
 });

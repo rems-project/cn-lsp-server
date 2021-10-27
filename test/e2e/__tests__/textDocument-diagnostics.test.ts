@@ -45,7 +45,7 @@ describe("textDocument/diagnostics", () => {
               Object {
                 "code": "View Program State",
                 "codeDescription": Object {
-                  "href": "file:///tmp/cn-lsp-server-diagnostic-test.c",
+                  "href": "file:///tmp/cn-lsp-server-diagnostic-test.c.cn-state",
                 },
                 "message": "Undefined behaviour (§6.5#2) an exceptional condition occurred during the evaluation of an expression.",
                 "range": Object {

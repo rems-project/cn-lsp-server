@@ -2,32 +2,140 @@
 
 (data_only_dirs submodules)
 
-(rule
- (copy lsp.opam.template jsonrpc.opam.template))
-
 (subdir
  vendor
+ ;; lsp-fiber
+ (subdir
+  lsp-fiber
+  (copy_files#
+   %{workspace_root}/submodules/ocaml-lsp/lsp-fiber/src/*.{ml,mli})
+  (library
+   (name lsp_fiber)
+   (libraries
+    fiber
+    fiber_unix
+    jsonrpc
+    jsonrpc_fiber
+    lsp
+    ppx_yojson_conv_lib
+    result
+    stdune
+    yojson)))
+ ;; jsonrpc-fiber
+ (subdir
+  jsonrpc-fiber
+  (copy_files#
+   %{workspace_root}/submodules/ocaml-lsp/jsonrpc-fiber/src/*.{ml,mli})
+  (library
+   (name jsonrpc_fiber)
+   (package cn-lsp-server)
+   (libraries fiber fiber_unix jsonrpc ppx_yojson_conv_lib stdune yojson)))
+ ;; fiber
  (subdir
   fiber
-  (copy_files# %{workspace_root}/submodules/dune/src/fiber/*.{ml,mli})
+  (copy_files#
+   %{workspace_root}/submodules/ocaml-lsp/submodules/dune/src/fiber/*.{ml,mli})
   (library
    (libraries stdune)
-   (name fiber)))
+   (name fiber)
+   (package cn-lsp-server)))
+ ;; jsonrpc
+ (subdir
+  jsonrpc
+  (copy_files# %{workspace_root}/submodules/ocaml-lsp/jsonrpc/src/*.{ml,mli})
+  (library
+   (name jsonrpc)
+   (package cn-lsp-server)))
+ ;; lsp
+ (subdir
+  lsp
+  ;; lsp/src
+  (subdir
+   src
+   (copy_files#
+    %{workspace_root}/submodules/ocaml-lsp/lsp/src/*.{ml,mli,mll})
+   (library
+    (name lsp)
+    (package cn-lsp-server)
+    (libraries
+     jsonrpc
+     ppx_yojson_conv_lib
+     result
+     stdune
+     threads.posix
+     uutf
+     yojson))
+   (cinaps
+    (files types.ml types.mli)
+    (libraries lsp_gen))
+   (ocamllex uri_lexer))
+  ;; lsp/bin
+  (subdir
+   bin
+   ;; lsp/bin/markdown
+   (subdir
+    markdown
+    (copy_files#
+     %{workspace_root}/submodules/ocaml-lsp/lsp/bin/markdown/*.{mll,mli})
+    (ocamllex markdown))
+   ;; lsp/bin/typescript
+   (subdir
+    typescript
+    (copy_files
+     %{workspace_root}/submodules/ocaml-lsp/lsp/bin/typescript/*.{ml,mli,mly,mll})
+    (ocamllex ts_lexer)
+    ;; the compiler will infer a wrong type with (infer true)
+    (menhir
+     (infer false)
+     (modules ts_parser)))
+   ;; lsp/bin/ocaml
+   (subdir
+    ocaml
+    (copy_files
+     %{workspace_root}/submodules/ocaml-lsp/lsp/bin/ocaml/*.{ml,mli}))
+   (copy_files#
+    %{workspace_root}/submodules/ocaml-lsp/lsp/bin/specifications/*)
+   (copy_files# %{workspace_root}/submodules/ocaml-lsp/lsp/bin/*.{ml,mli})
+   (include_subdirs unqualified)
+   (rule
+    (with-stdout-to
+     spec.ml
+     (progn
+      (echo "let _3_16 = {spec|")
+      (echo "%{read:specification-3-16.md}")
+      (echo "|spec}"))))
+   (library
+    (name lsp_gen)
+    (modules :standard \ gen)
+    (package cn-lsp-server)
+    (libraries stdune pp))))
+ ;; fiber-unix
+ (subdir
+  fiber-unix
+  (copy_files#
+   %{workspace_root}/submodules/ocaml-lsp/fiber-unix/src/*.{ml,mli})
+  (library
+   (name fiber_unix)
+   (package cn-lsp-server)
+   (libraries fiber stdune threads.posix yojson)))
+ ;; stdune-unstable
  (subdir
   stdune-unstable
+  ;; FS stubs
   (subdir
    dune_filesystem_stubs
    (copy_files#
-     %{workspace_root}/submodules/dune/otherlibs/stdune-unstable/dune_filesystem_stubs/*.*)
+    %{workspace_root}/submodules/ocaml-lsp/submodules/dune/otherlibs/stdune-unstable/dune_filesystem_stubs/*.*)
    (library
     (name dune_filesystem_stubs)
-    (public_name lsp.filesystem_stubs)
+    (package cn-lsp-server)
     (libraries)
     (foreign_stubs
      (language c)
      (names readdir))))
   (copy_files#
-    %{workspace_root}/submodules/dune/otherlibs/stdune-unstable/*.*)
+   %{workspace_root}/submodules/ocaml-lsp/submodules/dune/otherlibs/stdune-unstable/*.*)
+  ;; stdune
   (library
    (name stdune)
    (libraries
@@ -38,4 +146,4 @@
    (foreign_stubs
     (language c)
     (names fcntl_stubs wait3_stubs))
-   (public_name lsp.stdune))))
+   (package cn-lsp-server))))

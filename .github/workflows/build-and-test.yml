@@ -30,7 +30,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          submodules: true
+          submodules: recursive
 
       - name: Use latest LTS Node.js release
         uses: actions/setup-node@v2

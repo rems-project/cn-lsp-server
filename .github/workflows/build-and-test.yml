@@ -27,13 +27,6 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      - name: Checkout Cerberus
-        uses: actions/checkout@v2
-        with:
-          repository: rems-project/cerberus
-          path: cerberus
-          ref: cerna
-
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -55,10 +48,6 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           dune-cache: ${{ matrix.os != 'macos-latest' }}
 
-      - name: Install Cerberus and CN
-        run: opam install --deps-only . && make install install_cn
-        working-directory: cerberus
-
       - name: Install opam packages
         run: opam install .
         working-directory: cn-lsp-server
@@ -71,6 +60,20 @@ jobs:
       - name: Run build
         run: opam exec -- make all
         working-directory: cn-lsp-server
+
+      - name: Checkout Cerberus
+        uses: actions/checkout@v2
+        with:
+          repository: rems-project/cerberus
+          path: cerberus
+          ref: cerna
+
+      - name: Install Cerberus Dependency
+        run: apt-get install libmpfr-dev
+
+      - name: Install Cerberus and CN
+        run: opam install --deps-only . && make install install_cn
+        working-directory: cerberus
 
       - name: Run the integration tests
         run: opam exec -- make test

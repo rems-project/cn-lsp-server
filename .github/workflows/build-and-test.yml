@@ -27,10 +27,18 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
+      - name: Checkout Cerberus
+        uses: actions/checkout@v2
+        with:
+          repository: rems-project/cerberus
+          path: cerberus
+          ref: cerna
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           submodules: recursive
+          path: cn-lsp-server
 
       - name: Use latest LTS Node.js release
         uses: actions/setup-node@v2
@@ -47,15 +55,18 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           dune-cache: ${{ matrix.os != 'macos-latest' }}
 
+      - name: Install Cerberus and CN
+        run: cd cerberus && opam install --deps-only . && make install install_cn
+
       - name: Install opam packages
-        run: opam install .
+        run: cd cn-lsp-server && opam install .
 
       - name: Check formatting
-        run: opam install ocamlformat && opam exec -- make fmt
+        run: cd cn-lsp-server && opam install ocamlformat && opam exec -- make fmt
         if: ${{ matrix.os == 'ubuntu-latest' && always() }}
 
       - name: Run build
-        run: opam exec -- make all
+        run: cd cn-lsp-server && opam exec -- make all
 
       - name: Run the integration tests
-        run: opam exec -- make test
+        run: cd cn-lsp-server && opam exec -- make test

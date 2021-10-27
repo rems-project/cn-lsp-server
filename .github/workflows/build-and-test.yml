@@ -69,7 +69,7 @@ jobs:
           ref: cerna
 
       - name: Install Cerberus Dependency
-        run: apt-get install libmpfr-dev
+        run: sudo apt-get install libmpfr-dev -y
 
       - name: Install Cerberus and CN
         run: opam install --deps-only . && make install install_cn

@@ -4,13 +4,15 @@ CN LSP Server is a language server for the CN type system for the C programming 
 
 [![Build](https://github.com/rems-project/cn-lsp-server/workflows/Build%20and%20Test/badge.svg)](https://github.com/rems-project/cn-lsp-server/actions)
 
-OCaml-LSP is a language server for OCaml that implements [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) (LSP).
-
-This project contains an implementation of a language server for OCaml and a standalone
-library implementing LSP.
-
 ## Installation
 
+We recommend to install the language server by cloning the repo and typing:
+
+```sh
+$ make install
+```
+
+<!--
 We recommend to install the language server via a package manager such as
 [opam](http://github.com/ocaml/opam) or [esy](https://github.com/esy/esy).
 
@@ -32,6 +34,7 @@ To add the language server to an esy project, run in terminal:
 ```
 $ esy add @opam/cn-lsp-server
 ```
+--!>
 
 ### Source
 

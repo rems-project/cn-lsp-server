@@ -21,6 +21,9 @@
  (depends
   yojson
   re
+  menhir
+  uutf
+  dune-build-info
   (ppx_yojson_conv_lib (>= "v0.14"))
   (pp (>= 1.1.2))
   (csexp (>= 1.4))

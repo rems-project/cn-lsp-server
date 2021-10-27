@@ -65,7 +65,7 @@ let json_to_diagnostic json =
 let get_errs (doc : Document.t) : Diagnostic.t list =
   let doc_path = Uri.to_path @@ Document.uri doc in
   let state_file =
-    Filename.(concat (get_temp_dir_name ()) (basename doc_path))
+    Filename.(concat (get_temp_dir_name ()) (basename doc_path ^ ".cn-state"))
   in
   let cn = Fpath.to_string @@ Option.value_exn @@ Bin.which "cn" in
   let ((_stdin, _stdout, stderr) as pipes) =

@@ -68,11 +68,15 @@ jobs:
           path: cerberus
           ref: cerna
 
-      - name: Install Cerberus Dependency
+      - name: Install Cerberus system dependency
         run: sudo apt-get install libmpfr-dev -y
 
+      - name: Install Cerberus OCaml dependencies
+        run: opam install --deps-only .
+        working-directory: cerberus
+
       - name: Install Cerberus and CN
-        run: opam install --deps-only . && make install install_cn
+        run: opam exec -- make install install_cn
         working-directory: cerberus
 
       - name: Run the integration tests

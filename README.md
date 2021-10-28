@@ -34,7 +34,7 @@ To add the language server to an esy project, run in terminal:
 ```
 $ esy add @opam/cn-lsp-server
 ```
---!>
+-->
 
 ### Source
 

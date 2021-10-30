@@ -145,7 +145,7 @@ apply-header:
 	    `find src -name '*.ml' ! -path 'src/cn.ml'` \
 	    `find src -name '*.ml*'` \
 	    Makefile \
-	    dune \
+	    `find . -name 'dune' ! -path './_build/*' ! -path './submodules/*' ! -path './.git/*'` \
 	    `find test -name '*.js' ! -path 'test/e2e/node_modules/*'` \
 	    `find test -name '*.ts' ! -path 'test/e2e/node_modules/*'`
 	headache -c etc/headache_config -h etc/BSD-2-Clause src/cn.ml

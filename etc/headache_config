@@ -6,6 +6,8 @@
 # Misc
 | ".*Makefile.*" -> frame open:"#"  line:"#" close:"#"
 | ".*\\.yml"     -> frame open:"#"  line:"#" close:"#"
+| ".*\\.prettierrc" -> frame open:"#"  line:"#" close:"#"
+| ".*\\.prettierignore" -> frame open:"#"  line:"#" close:"#"
 | ".*\\.editorconfig" -> frame open:"#"  line:"#" close:"#"
 | ".*\\.gitignore" -> frame open:"#"  line:"#" close:"#"
 | ".*\\.gitmodules" -> frame open:"#"  line:"#" close:"#"

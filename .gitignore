@@ -72,3 +72,4 @@ tmp/
 .merlin
 *.install
 *.log
+test/e2e/node_modules

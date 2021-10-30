@@ -10,3 +10,4 @@
 | ".*\\.gitignore" -> frame open:"#"  line:"#" close:"#"
 | ".*\\.gitmodules" -> frame open:"#"  line:"#" close:"#"
 | "dune"         -> frame open:";"  line:";" close:";"
+| ".*\\.md" -> frame open:"<!--"  line:" " close:"-->"

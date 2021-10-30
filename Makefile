@@ -133,7 +133,7 @@ clear-header:
 	headache -c etc/headache_config -r \
 	    `find src -name '*.ml' ! -path 'src/cn.ml'` \
 	    `find src -name '*.ml*'` \
-	    Makefile .github/workflows/build-and-test.yml .editorconfig .gitignore .gitmodules \
+	    Makefile .github/workflows/build-and-test.yml .editorconfig .gitignore .gitmodules README.md \
 	    `find . -name 'dune' ! -path './_build/*' ! -path './submodules/*' ! -path './.git/*'` \
 	    `find test -name '*.js' ! -path 'test/e2e/node_modules/*'` \
 	    `find test -name '*.ts' ! -path 'test/e2e/node_modules/*'` \
@@ -145,7 +145,7 @@ apply-header:
 	headache -c etc/headache_config -h LICENCE \
 	    `find src -name '*.ml' ! -path 'src/cn.ml'` \
 	    `find src -name '*.ml*'` \
-	    Makefile .github/workflows/build-and-test.yml .editorconfig .gitignore .gitmodules \
+	    Makefile .github/workflows/build-and-test.yml .editorconfig .gitignore .gitmodules README.md \
 	    `find . -name 'dune' ! -path './_build/*' ! -path './submodules/*' ! -path './.git/*'` \
 	    `find test -name '*.js' ! -path 'test/e2e/node_modules/*'` \
 	    `find test -name '*.ts' ! -path 'test/e2e/node_modules/*'`

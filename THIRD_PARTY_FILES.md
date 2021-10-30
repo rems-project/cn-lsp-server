@@ -2,8 +2,9 @@ The following parts of CN LSP Server contain new code released under the
 BSD 2-Clause License:
 * `src/cn.ml`
 
-All other parts on CN LSP Server are released under a mixed BSD-2-Clause
-and ISC license.
+All other parts involve adapted code, with the new code subject to the
+above BSD 2-Clause licence and the original code subject to its ISC
+licence.
 
 ISC License
 

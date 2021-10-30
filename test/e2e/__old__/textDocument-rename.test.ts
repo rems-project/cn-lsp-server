@@ -40,8 +40,9 @@
 /*  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF        */
 /*  SUCH DAMAGE.                                                              */
 /*                                                                            */
-/*  All other parts on CN LSP Server are released under a mixed BSD-2-Clause  */
-/*  and ISC license.                                                          */
+/*  All other parts involve adapted code, with the new code subject to the    */
+/*  above BSD 2-Clause licence and the original code subject to its ISC       */
+/*  licence.                                                                  */
 /*                                                                            */
 /*  ISC License                                                               */
 /*                                                                            */

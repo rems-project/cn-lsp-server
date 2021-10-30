@@ -40,8 +40,9 @@
 #  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF        #
 #  SUCH DAMAGE.                                                              #
 #                                                                            #
-#  All other parts on CN LSP Server are released under a mixed BSD-2-Clause  #
-#  and ISC license.                                                          #
+#  All other parts involve adapted code, with the new code subject to the    #
+#  above BSD 2-Clause licence and the original code subject to its ISC       #
+#  licence.                                                                  #
 #                                                                            #
 #  ISC License                                                               #
 #                                                                            #
@@ -125,10 +126,6 @@ release: ## Release on Opam
 	DUNE_RELEASE_DELEGATE=github-dune-release-delegate dune-release publish distrib --verbose
 	dune-release opam pkg
 	dune-release opam submit
-
-.PHONY: nix/opam-selection.nix
-nix/opam-selection.nix:
-	nix-shell -A resolve default.nix
 
 .PHONY: clear-header
 

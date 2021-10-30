@@ -5,4 +5,8 @@
 | ".*\\.ml[i]?"  -> frame  open:"(*"    line:"="  close:"*)"
 # Misc
 | ".*Makefile.*" -> frame open:"#"  line:"#" close:"#"
+| ".*\\.yml"     -> frame open:"#"  line:"#" close:"#"
+| ".*\\.editorconfig" -> frame open:"#"  line:"#" close:"#"
+| ".*\\.gitignore" -> frame open:"#"  line:"#" close:"#"
+| ".*\\.gitmodules" -> frame open:"#"  line:"#" close:"#"
 | "dune"         -> frame open:";"  line:";" close:";"

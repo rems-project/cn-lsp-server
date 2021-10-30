@@ -5,10 +5,20 @@
 
 (implicit_transitive_deps false)
 
-(license BSD)
+(license "Mixed BSD and ISC")
 (maintainers "Dhruv Makwana <dcm41@cam.ac.uk>")
 (authors
- "Dhruv Makwana <dcm41@cam.ac.uk>")
+ "Dhruv Makwana <dcm41@cam.ac.uk>"
+ "Andrey Popp <8mayday@gmail.com>"
+ "Rusty Key <iam@stfoo.ru>"
+ "Louis Roché <louis@louisroche.net>"
+ "Oleksiy Golovko <alexei.golovko@gmail.com>"
+ "Rudi Grinberg <me@rgrinberg.com>"
+ "Sacha Ayoun <sachaayoun@gmail.com>"
+ "cannorin <cannorin@gmail.com>"
+ "Ulugbek Abdullaev <ulugbekna@gmail.com>"
+ "Thibaut Mattio <thibaut.mattio@gmail.com>"
+ "Max Lantas <mnxndev@outlook.com>")
 
 (source (github rems-project/cn-lsp-server))
 

@@ -70,7 +70,6 @@ CN LSP Server is a language server for the CN type system for the C programming 
 
 ## Installation
 
-We recommend to install the language server by cloning the repo and typing:
 
 ```sh
 $ git clone --recurse-submodules http://github.com/rems-project/cn-lsp-server.git
@@ -137,7 +136,7 @@ The server supports the following LSP requests:
 - [ ] `textDocument/selectionRange`
 - [ ] `workspace/symbol`
 
-Note that degrees of support for each LSP request are varying.
+Note that the degree of support for each LSP request varies.
 
 ## Contributing to project
 

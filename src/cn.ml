@@ -2,7 +2,6 @@
 (*  Copyright (c) 2021 Dhruv Makwana                                       *)
 (*  All rights reserved.                                                   *)
 (*                                                                         *)
-(*                                                                         *)
 (*  This software was developed by the University of Cambridge Computer    *)
 (*  Laboratory as part of the Rigorous Engineering of Mainstream Systems   *)
 (*  (REMS) project. This project has been partly funded by an EPSRC        *)
